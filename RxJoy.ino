@@ -23,33 +23,28 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
 */
-#include "pwm.h"
+#include <PPMReader.h>
+#include "usb.h"
+
+int interruptPin = 2;
+int channelAmount = 6;
+PPMReader ppm(interruptPin, channelAmount);
+
+RxJoystick Joy;
 
 void setup()
 {
-  pinMode(13, OUTPUT);
-  Serial.begin(57600);
-  AttachInterrupts();
-}
-
-void write(uint16_t w)
-{
-  while (Serial.availableForWrite() < 2) ;
-  Serial.write(w >> 8);
-  Serial.write(w & 0x00FF);
+  // Sends a clean report to the host. This is important on any Arduino type.
+  Joy.begin();
 }
 
 void loop()
 {
-  digitalWrite(13, LOW);
-  delay(25);
-  if (GetChannels())
-  {
-    write(SYNC);
-    for (uint8_t c = 0; c < MAX_CHANNELS; c++)
-      write(Pwm[c]);
-  }
-  digitalWrite(13, HIGH);
-  delay(25);
+  Joy.Throttle(ppm.latestValidChannelValue(3, 0));
+  Joy.Aileron(ppm.latestValidChannelValue(1, 0));
+  Joy.Elevator(ppm.latestValidChannelValue(2, 0));
+  Joy.Rudder(ppm.latestValidChannelValue(4, 0));
+  Joy.Gear(ppm.latestValidChannelValue(5, 0));
+  Joy.Aux1(ppm.latestValidChannelValue(6, 0));
+  Joy.write();
 }
-

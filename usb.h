@@ -31,7 +31,6 @@
 
 #include <Arduino.h>
 #include <HID.h>
-#include <HID-Settings.h>
 
 // For multiple reports support.
 #define HID_REPORTID_RX_JOYSTICK  11
@@ -44,7 +43,7 @@ static const uint8_t HID_DESCRIPTOR_JOYSTICK[] PROGMEM =
   0x09, 0x04,                     /* USAGE (Joystick) */
   0xa1, 0x01,                     /* COLLECTION (Application) */
   0x85, HID_REPORTID_RX_JOYSTICK, /*   REPORT_ID */
-  /* 8 16bit Axis */
+  /* 6 16bit Axis */
   0x05, 0x01,                     /*   USAGE_PAGE (Generic Desktop) */
   0x09, 0x01,                     /*   USAGE (Pointer) */
   0xa1, 0x00,                     /*   COLLECTION (Physical) */
@@ -54,12 +53,10 @@ static const uint8_t HID_DESCRIPTOR_JOYSTICK[] PROGMEM =
   0x09, 0x32,                     /*     USAGE (Z) for Rudder */
   0x09, 0x33,                     /*     USAGE (Rx) for Gear */
   0x09, 0x34,                     /*     USAGE (Ry) for Aux 1 */
-  0x09, 0x35,                     /*     USAGE (Rz) for Aux 2 */
-  0x09, 0x37,                     /*     USAGE (Dial) for Aux 3 */
-  0x16, 0xEB, 0x03,               /*     LOGICAL_MINIMUM (1000) */
+  0x16, 0xE8, 0x03,               /*     LOGICAL_MINIMUM (1000) */
   0x26, 0xD0, 0x07,               /*     LOGICAL_MAXIMUM (2000) */
   0x75, 0x10,                     /*     REPORT_SIZE (16) */
-  0x95, 0x08,                     /*     REPORT_COUNT (8) */
+  0x95, 0x06,                     /*     REPORT_COUNT (6) */
   0x81, 0x02,                     /*     INPUT (Data,Var,Abs) */
   0xc0,                           /*   END_COLLECTION */
   0xc0                            /* END_COLLECTION */
@@ -74,8 +71,6 @@ typedef struct
   int16_t Rudder;
   int16_t Gear;
   int16_t Aux1;
-  int16_t Aux2;
-  int16_t Aux3;
 } HID_RX_JOYSTICK_REPORT;
   
 class RxJoystick
@@ -145,15 +140,4 @@ public:
   {
     FReport.Aux1 = a; 
   }
-  
-  inline void Aux2(int16_t a)
-  {
-    FReport.Aux2 = a; 
-  }
-  
-  inline void Aux3(int16_t a)
-  {
-    FReport.Aux3 = a;
-  }
 };
-
